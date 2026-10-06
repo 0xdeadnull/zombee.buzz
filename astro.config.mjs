@@ -8,6 +8,7 @@ export default defineConfig({
 		starlight({
 			title: 'Zombee.Buzz',
             pagination: false,
+            tableOfContents: false,
             customCss: ['./src/styles/custom.css',],
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/0xdeadnull' }],
             components: {
