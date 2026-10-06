@@ -1,0 +1,69 @@
+---
+import { getCollection } from 'astro:content';
+
+interface Props {
+  type: 'code' | 'idea' | 'project' | 'paper' | 'stuff';
+}
+
+const { type } = Astro.props;
+
+const items = (await getCollection('docs'))
+  .filter((entry) => entry.data.type === type && entry.data.date)
+  .sort((a, b) => b.data.date!.getTime() - a.data.date!.getTime());
+
+const formatDate = (date: Date) =>
+  date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+---
+
+<div class="category-list">
+  {items.map((item) => (
+    <article class="category-item">
+      <div class="category-date">
+        {formatDate(item.data.date!)}
+      </div>
+
+      <a class="category-title" href={`/${item.id}/`}>
+        {item.data.title}
+      </a>
+
+      {item.data.description && (
+        <p>{item.data.description}</p>
+      )}
+    </article>
+  ))}
+</div>
+
+<style>
+  .category-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .category-item {
+    margin: 0;
+  }
+
+  .category-date {
+    margin-bottom: 0.3rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    opacity: 0.65;
+    text-transform: uppercase;
+  }
+
+  .category-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+
+  .category-item p {
+    margin: 0.25rem 0 0;
+  }
+</style>

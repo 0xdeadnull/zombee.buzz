@@ -1,0 +1,34 @@
+---
+const { entry } = Astro.locals.starlightRoute;
+const { title, type } = entry.data;
+
+const categories = {
+  code:   { label: 'CODE',    href: '/code/' },
+  idea:   { label: 'IDEA',    href: '/ideas/' },
+  project:{ label: 'PROJECT', href: '/projects/' },
+  paper:  { label: 'PAPER',   href: '/papers/' },
+  stuff:  { label: 'STUFF',   href: '/stuff/' },
+};
+
+const category = type ? categories[type] : undefined;
+---
+
+{category && (
+  <a class="content-type" href={category.href}>
+    {category.label}
+  </a>
+)}
+
+<h1 id="_top">{title}</h1>
+
+<style>
+  .content-type {
+    display: inline-block;
+    margin-bottom: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    opacity: 0.65;
+  }
+</style>

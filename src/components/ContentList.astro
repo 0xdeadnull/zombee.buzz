@@ -1,0 +1,89 @@
+---
+interface Props {
+  type?: 'code' | 'idea' | 'project' | 'paper' | 'stuff';
+  limit?: number;
+}
+
+const { type, limit = 8 } = Astro.props;
+import { getCollection } from 'astro:content';
+
+const items = (await getCollection('docs'))
+  .filter(
+    (entry) =>
+      entry.data.date &&
+      entry.data.type &&
+      (!type || entry.data.type === type)
+  )
+  .sort(
+    (a, b) =>
+      b.data.date!.getTime() - a.data.date!.getTime()
+  )
+  .slice(0, limit);
+
+const typeNames = {
+  code: 'CODE',
+  idea: 'IDEA',
+  project: 'PROJECT',
+  paper: 'PAPER',
+  stuff: 'STUFF',
+};
+
+const formatDate = (date: Date) =>
+  date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: '2-digit',
+    timeZone: 'UTC',
+  }).toUpperCase();
+---
+
+<div class="latest">
+  {items.map((item) => (
+    <article class="latest-item">
+      <div class="latest-meta">
+        <time datetime={item.data.date!.toISOString()}>
+          {formatDate(item.data.date!)}
+        </time>
+        <span>{typeNames[item.data.type!]}</span>
+      </div>
+
+      <a class="latest-title" href={`/${item.id}/`}>
+        {item.data.title}
+      </a>
+
+      {item.data.description && (
+        <p>{item.data.description}</p>
+      )}
+    </article>
+  ))}
+</div>
+
+<style>
+  .latest {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .latest-item {
+    margin: 0;
+  }
+
+  .latest-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.3rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    opacity: 0.65;
+  }
+
+  .latest-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+
+  .latest-item p {
+    margin: 0.25rem 0 0;
+  }
+</style>
